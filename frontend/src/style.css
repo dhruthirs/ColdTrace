@@ -1,5 +1,84 @@
-*{box-sizing:border-box}body{margin:0;font-family
-    
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f7fb;
+  color: #12233f;
+}
+
+main {
+  max-width: 1200px;
+  margin: auto;
+  padding: 28px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 34px;
+}
+
+header p {
+  margin: 5px 0;
+  color: #60708a;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.card,
+.panel {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 18px #00000010;
+}
+
+.card span {
+  display: block;
+  color: #60708a;
+}
+
+.card strong {
+  display: block;
+  font-size: 32px;
+  margin: 12px 0;
+}
+
+.panel {
+  margin-top: 18px;
+}
+
+.chart {
+  height: 330px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.event {
+  display: grid;
+  grid-template-columns: 100px 1fr 70px;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
 .insight-row {
   display: flex;
   justify-content: space-between;
@@ -23,4 +102,17 @@
   background: #f1f5f9;
   color: #334155;
   line-height: 1.5;
-}:Arial;background:#f4f7fb;color:#12233f}main{max-width:1200px;margin:auto;padding:28px}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}h1{margin:0;font-size:34px}header p{margin:5px 0;color:#60708a}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card,.panel{background:white;border-radius:16px;padding:20px;box-shadow:0 4px 18px #00000010}.card span{display:block;color:#60708a}.card strong{display:block;font-size:32px;margin:12px 0}.panel{margin-top:18px}.chart{height:330px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.event{display:grid;grid-template-columns:100px 1fr 70px;gap:10px;padding:10px 0;border-bottom:1px solid #eee}@media(max-width:800px){.cards,.grid{grid-template-columns:1fr}header{flex-direction:column;align-items:flex-start;gap:12px}}
+}
+
+@media (max-width: 800px) {
+  .cards,
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
