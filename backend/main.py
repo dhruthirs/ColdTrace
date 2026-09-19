@@ -100,3 +100,45 @@ def events(device_id="CT001", limit=100):
     rows = c.execute("SELECT * FROM events WHERE device_id=? ORDER BY id DESC LIMIT ?", (device_id, min(limit,500))).fetchall()
     c.close()
     return {"data": [dict(r) for r in rows]}
+
+@app.get("/api/insights")
+def insights(device_id="CT001"):
+    c = conn()
+
+    rows = c.execute(
+        "SELECT temperature FROM telemetry WHERE device_id=? ORDER BY id DESC LIMIT 10",
+        (device_id,)
+    ).fetchall()
+
+    latest_row = c.execute(
+        "SELECT cooling FROM telemetry WHERE device_id=? ORDER BY id DESC LIMIT 1",
+        (device_id,)
+    ).fetchone()
+
+    c.close()
+
+    temperatures = [row["temperature"] for row in reversed(rows)]
+
+    if not temperatures:
+        return {
+            "data": None
+        }
+
+    trend = calculate_trend(temperatures)
+    rate = calculate_rate(temperatures)
+    anomaly = detect_anomaly(temperatures)
+
+    cooling = bool(latest_row["cooling"]) if latest_row else False
+    cooling_failure = detect_cooling_failure(temperatures, cooling)
+
+    latest = temperatures[-1]
+
+    return {
+        "data": {
+            "temperature": latest,
+            "trend": trend,
+            "rate": rate,
+            "anomaly": anomaly,
+            "cooling_failure": cooling_failure
+        }
+    }
