@@ -4,6 +4,8 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from ml.trend import calculate_trend, calculate_rate
+from ml.anomaly import detect_anomaly, detect_cooling_failure
 
 DB = Path(__file__).parent / "coldtrace.db"
 app = FastAPI(title="ColdTrace API")
@@ -49,9 +51,22 @@ def telemetry(data: Telemetry):
     previous = c.execute("SELECT cooling FROM telemetry WHERE device_id=? ORDER BY id DESC LIMIT 1", (data.device_id,)).fetchone()
     c.execute("INSERT INTO telemetry(device_id,timestamp,temperature,humidity,cooling) VALUES(?,?,?,?,?)",
               (data.device_id, ts, data.temperature, data.humidity, int(data.cooling)))
+    rows = c.execute(
+        "SELECT temperature FROM telemetry WHERE device_id=? ORDER BY id DESC LIMIT 10",
+        (data.device_id,)
+    ).fetchall()
 
+    temperatures = [row["temperature"] for row in reversed(rows)]
+
+    anomaly = detect_anomaly(temperatures)
+    cooling_failure = detect_cooling_failure(temperatures, data.cooling)
     event = None
-    if previous is not None and bool(previous["cooling"]) != data.cooling:
+
+    if cooling_failure:
+        event = "COOLING_FAILURE"
+    elif anomaly:
+        event = "ANOMALY_DETECTED"
+    elif previous is not None and bool(previous["cooling"]) != data.cooling:
         event = "COOLING_ON" if data.cooling else "COOLING_OFF"
     elif data.temperature < 2.0:
         event = "LOW_TEMP"
